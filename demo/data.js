@@ -4,8 +4,8 @@
 // Matchs : ID, Poule, Terrain, Heure, Équipe 1, Équipe 2, Score 1, Score 2, Arbitre, Vainqueur, Perdant
 window.DEMO_DATA = {
   config: [
-    ["Nom du tournoi", "Tournoi de volley du club"],
-    ["Message d'info", "Bienvenue à tous ! La buvette est ouverte toute la journée."],
+    ["Nom du tournoi", "Tournoi de volley Chambly"],
+    ["Message d'info", "Bienvenue à tous ! La buvette est ouverte toute la journée. Premiers matchs à 9h30 !"],
   ],
   b1: [
     ["B1-A1","A",1,"","Les Smashers","Les Manchettes",25,18,"Filet Mignon","Les Smashers","Les Manchettes"],
