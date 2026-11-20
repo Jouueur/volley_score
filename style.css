@@ -194,6 +194,22 @@ details.pool-matches .match { box-shadow: none; }
   .top h1 { font-size: 1rem; }
 }
 
+/* ---------- Règlement ---------- */
+.rules { max-width: 760px; }
+.rules p, .rules li { line-height: 1.5; }
+.rules ol, .rules ul { padding-left: 22px; }
+.table-wrap { overflow-x: auto; margin: 8px 0 12px; }
+table.rules-table {
+  width: 100%; border-collapse: collapse; font-size: .9rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.rules-table th, .rules-table td { padding: 8px 10px; text-align: left; border-top: 1px solid var(--border); vertical-align: top; }
+.rules-table th { background: var(--surface-2); font-size: .8rem; color: var(--muted); border-top: 0; }
+.rule-box { display: flex; flex-direction: column; gap: 2px; }
+.rule-box span { font-size: .85rem; color: var(--muted); }
+.rule-box.main { border-color: var(--win); background: var(--win-soft); }
+.rule-box.main span { color: var(--text); }
+
 /* ---------- Mon équipe ---------- */
 .picker { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 16px 0 4px; }
 .picker select {

@@ -334,6 +334,58 @@
     return html;
   }
 
+  // Règlement : texte fixe, repris du document « composition des poules et de l'arbre ».
+  function viewRules() {
+    function box(name, sub, main) {
+      return '<div class="match rule-box' + (main ? " main" : "") + '"><b>' + name + '</b><span>' + sub + "</span></div>";
+    }
+    return '<div class="rules">' +
+      "<h2>Le format en bref</h2>" +
+      "<p>12 équipes, 3 terrains, une poule de 4 par terrain. Tous les matchs se jouent en un seul set en 21 (2 points d'écart).</p>" +
+      "<ol>" +
+      "<li><b>Brassage 1</b> : poules A, B et C. Chaque équipe rencontre les 3 autres de sa poule.</li>" +
+      "<li><b>Brassage 2</b> : nouvelles poules D, E et F, composées à partir du classement du brassage 1. Chaque équipe rencontre à nouveau les 3 autres de sa poule.</li>" +
+      "<li><b>Phase finale</b> : les 8 équipes qualifiées à l'issue du brassage 2 jouent des quarts, des demi-finales, une petite finale et une finale.</li>" +
+      "</ol>" +
+      "<p>Pendant chaque match de poule, une des deux équipes libres de la poule arbitre.</p>" +
+
+      "<h2>Le classement d'une poule</h2>" +
+      "<p>Une victoire rapporte 3 points, une défaite 0. En cas d'égalité, on départage dans cet ordre :</p>" +
+      "<ol><li>les points de classement ;</li><li>le goal average (points marqués moins points encaissés) ;</li><li>le nombre total de points marqués.</li></ol>" +
+
+      "<h2>Les poules du brassage 2</h2>" +
+      '<div class="table-wrap"><table class="rules-table"><thead><tr><th>Poule D (terrain 1)</th><th>Poule E (terrain 2)</th><th>Poule F (terrain 3)</th></tr></thead><tbody>' +
+      "<tr><td>1er poule A</td><td>1er poule B</td><td>1er poule C</td></tr>" +
+      "<tr><td>2e poule C</td><td>2e poule A</td><td>2e poule B</td></tr>" +
+      "<tr><td>3e poule B</td><td>3e poule C</td><td>3e poule A</td></tr>" +
+      "<tr><td>4e poule A</td><td>4e poule B</td><td>4e poule C</td></tr>" +
+      "</tbody></table></div>" +
+
+      "<h2>Qui se qualifie pour la phase finale</h2>" +
+      "<p>8 équipes sur 12 se qualifient :</p>" +
+      "<ul><li>les 2 premiers de chaque poule du brassage 2 ;</li>" +
+      "<li>les 2 meilleurs 3es, départagés sur le cumul des 2 brassages : points, puis goal average, puis points marqués.</li></ul>" +
+      "<p>Les 8 qualifiés reçoivent un numéro de tête de série, de 1 (le meilleur) à 8 :</p>" +
+      '<div class="table-wrap"><table class="rules-table"><thead><tr><th>Têtes de série</th><th>Qui</th><th>Comment on les classe entre eux</th></tr></thead><tbody>' +
+      "<tr><td>1, 2, 3</td><td>Les trois 1ers de poule</td><td>Points cumulés des 2 brassages, puis goal average cumulé, puis points marqués cumulés</td></tr>" +
+      "<tr><td>4, 5, 6</td><td>Les trois 2es de poule</td><td>Idem</td></tr>" +
+      "<tr><td>7, 8</td><td>Les deux meilleurs 3es</td><td>Idem</td></tr>" +
+      "</tbody></table></div>" +
+      "<p>Le cumul ne sert qu'à classer entre elles des équipes de même rang : un 1er de poule passe toujours devant un 2e, et un 4e est éliminé quel que soit son total.</p>" +
+
+      "<h2>L'arbre final</h2>" +
+      '<p class="hint">Les têtes de série 1 et 2 ne peuvent se croiser qu\'en finale.</p>' +
+      '<div class="bracket">' +
+      '<div class="round"><h3>Quarts de finale</h3><div class="slots">' +
+      box("Quart 1", "Tête de série 1 contre 8") + box("Quart 2", "Tête de série 4 contre 5") +
+      box("Quart 3", "Tête de série 2 contre 7") + box("Quart 4", "Tête de série 3 contre 6") + "</div></div>" +
+      '<div class="round"><h3>Demi-finales</h3><div class="slots">' +
+      box("Demi-finale 1", "Vainqueurs des quarts 1 et 2") + box("Demi-finale 2", "Vainqueurs des quarts 3 et 4") + "</div></div>" +
+      '<div class="round"><h3>Finales</h3><div class="slots">' +
+      box("Finale", "Vainqueurs des deux demies", true) + box("Petite finale (3e place)", "Perdants des deux demies") + "</div></div>" +
+      "</div></div>";
+  }
+
   // ---------------------------------------------------------------- app
   var app = document.getElementById("app");
 
@@ -341,6 +393,11 @@
     document.querySelectorAll("#tabs a").forEach(function (a) {
       a.classList.toggle("active", a.getAttribute("data-tab") === state.tab);
     });
+    if (state.tab === "regles") {
+      app.innerHTML = viewRules();
+      app.setAttribute("data-tab", state.tab);
+      return;
+    }
     var d = state.data;
     if (!d) {
       if (state.error) app.innerHTML = '<p class="empty">Impossible de charger les résultats.</p>';
@@ -416,7 +473,7 @@
 
   function route() {
     var t = (location.hash || "#programme").slice(1);
-    state.tab = ["programme", "b1", "b2", "finale", "equipe"].indexOf(t) >= 0 ? t : "programme";
+    state.tab = ["programme", "b1", "b2", "finale", "equipe", "regles"].indexOf(t) >= 0 ? t : "programme";
     render();
     window.scrollTo(0, 0);
   }
