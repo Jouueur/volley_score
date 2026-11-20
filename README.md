@@ -22,6 +22,8 @@ Page web de programme et de résultats pour le tournoi du club. La table de marq
    - 4 à 6 : les 2es ;
    - 7 et 8 : les deux meilleurs 3es.
 
+   Le rang dans la poule vient du brassage 2 seul. En revanche, pour classer entre eux les 1ers, les 2es et les 3es (et donc choisir les 2 meilleurs 3es), on cumule les résultats des deux brassages : points, puis goal average, puis points marqués (colonne `Clé cumulée B1+B2` de `Classement_B2`).
+
    Quarts : 1 contre 8, 4 contre 5, 2 contre 7, 3 contre 6. Viennent ensuite les demi-finales, la petite finale et la finale.
 
 Chaque match se joue **en un seul set**. Le score cible n'est fixé nulle part (25, 21, 15, au temps…) : un match compte comme joué dès que ses deux scores sont saisis. Le vainqueur est l'équipe qui a le plus de points.
@@ -32,7 +34,7 @@ Chaque match se joue **en un seul set**. Le score cible n'est fixé nulle part (
 
 L'arbitre est désigné par un code dans la colonne « Réf. arbitre » (par exemple `A3`, `4D`, `P-QF1`), comme les équipes.
 
-Classement d'une poule, et comparaison des 3es entre poules : points de classement (3 par victoire, 0 par défaite, réglable dans `Config`), puis goal average (points marqués moins points encaissés), puis nombre de points marqués.
+Classement d'une poule (et, sur le cumul des deux brassages, comparaison des 3es entre poules) : points de classement (3 par victoire, 0 par défaite, réglable dans `Config`), puis goal average (points marqués moins points encaissés), puis nombre de points marqués.
 
 **Forfaits.** Un match perdu par forfait compte comme une victoire pour l'adversaire et une défaite pour l'équipe forfait. Pour ne favoriser personne au goal average, on ne compte pas le score de ce match. À la place, chaque équipe reçoit sa propre moyenne (points marqués et encaissés) calculée sur ses autres matchs de la phase. Ces valeurs peuvent donc avoir une décimale.
 
