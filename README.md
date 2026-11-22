@@ -104,6 +104,18 @@ Générez un QR code de l'adresse et affichez-le au gymnase (table de marque, bu
 
 Astuce : `https://votre-site/?equipe=Les%20Smashers` ouvre directement la page « Mon équipe » d'une équipe. Pratique pour l'envoyer à chaque capitaine.
 
+## Un seul site pour plusieurs tournois
+
+Le même site peut afficher le tournoi de n'importe quel club, sans autre hébergement :
+
+1. L'organisateur fait sa copie du Sheet modèle (lien `…/d/<ID>/copy`), saisit ses équipes et la partage en lecture (« Tous les utilisateurs disposant du lien »).
+2. Vous ajoutez une ligne dans le Sheet **annuaire** (`DIRECTORY_SHEET_ID` dans `config.js`, onglet `Tournois`) : colonne A le nom court (`senlis`), colonne B l'ID ou le lien complet de son Sheet.
+3. Son adresse est `https://tournoi-volley.mariusbrosset.fr/?t=senlis`.
+
+Sans `?t=`, le site ouvre le dernier tournoi consulté sur ce téléphone, ou à défaut `SHEET_ID`. `?sheet=<ID>` ouvre un Sheet sans passer par l'annuaire. L'onglet Règlement décrit le tournoi par défaut : il est masqué pour les autres tournois.
+
+L'annuaire doit lui aussi être partagé en lecture avec « Tous les utilisateurs disposant du lien ». Seul vous le modifiez.
+
 ## Tester sans Google
 
 Ouvrez `index.html?demo` dans un navigateur, ou laissez `SHEET_ID` vide. Le site affiche alors l'instantané de `demo/data.js`.

@@ -4,7 +4,14 @@ window.APP_CONFIG = {
   // ID du Google Sheet : la partie entre /d/ et /edit dans son URL.
   // Le Sheet doit être partagé en "Toute personne disposant du lien : Lecteur".
   // Laisser vide ("") pour lancer le site en mode démo.
+  // C'est le tournoi affiché par défaut (adresse sans ?t=, sur un téléphone qui n'a encore rien ouvert).
   SHEET_ID: "19rQzBnI4cb7P55-eFxR_kjT9eAVSh9ihC9TgGQq-Xb4",
+
+  // Annuaire des tournois : Google Sheet qui associe un nom court à l'ID d'un Sheet de tournoi.
+  // https://tournoi-volley.mariusbrosset.fr/?t=chambly ouvre le tournoi de la ligne "chambly".
+  // On peut aussi ouvrir un Sheet directement avec ?sheet=<ID du Sheet>.
+  DIRECTORY_SHEET_ID: "1eAMxR5G_xPfSe07oaZt7GdBmq6T2zWgLrOm4ugfsFQA",
+  DIRECTORY_TAB: "Tournois",
 
   // Fréquence de rafraîchissement automatique (secondes).
   REFRESH_SECONDS: 30,

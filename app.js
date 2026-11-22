@@ -2,7 +2,9 @@
   "use strict";
 
   var CFG = window.APP_CONFIG || {};
-  var DEMO = !CFG.SHEET_ID || /[?&]demo\b/.test(location.search);
+  var PARAMS = new URLSearchParams(location.search);
+  var DEMO = /[?&]demo\b/.test(location.search);
+  var SHEET = ""; // ID du Sheet du tournoi affiché, fixé par resolveSheet()
   var PHASE_ORDER = ["b1", "b2", "finale"];
 
   // Colonnes des onglets Matchs_* (index 0 = colonne A)
@@ -19,7 +21,7 @@
     fav: store("fav") || "",
   };
   // Lien direct vers une équipe : index.html?equipe=Nom%20de%20l%27équipe
-  var teamParam = new URLSearchParams(location.search).get("equipe");
+  var teamParam = PARAMS.get("equipe");
   if (teamParam) { state.fav = teamParam; store("fav", teamParam); }
 
   // ---------------------------------------------------------------- utils
@@ -51,7 +53,8 @@
 
   // ---------------------------------------------------------------- data
   var seq = 0;
-  function gviz(sheet, range) {
+  function gviz(sheet, range, sheetId) {
+    sheetId = sheetId || SHEET;
     return new Promise(function (resolve, reject) {
       var cb = "__vls" + (++seq);
       var s = document.createElement("script");
@@ -67,7 +70,7 @@
         resolve(tableToRows(resp.table));
       };
       s.onerror = function () { done(); reject(new Error("réseau")); };
-      s.src = "https://docs.google.com/spreadsheets/d/" + encodeURIComponent(CFG.SHEET_ID) +
+      s.src = "https://docs.google.com/spreadsheets/d/" + encodeURIComponent(sheetId) +
         "/gviz/tq?tqx=out:json;responseHandler:" + cb +
         "&headers=1&sheet=" + encodeURIComponent(sheet) +
         (range ? "&range=" + encodeURIComponent(range) : "") +
@@ -86,6 +89,41 @@
       return out;
     });
   }
+  // Choix du tournoi : ?sheet=<ID>, sinon ?t=<nom court> (cherché dans l'annuaire),
+  // sinon le dernier tournoi ouvert sur ce téléphone, sinon CFG.SHEET_ID.
+  function sheetIdFrom(v) {
+    v = str(v);
+    var m = /\/d\/([\w-]{20,})/.exec(v); // on accepte aussi un lien complet
+    return m ? m[1] : v;
+  }
+  function useSheet(id) {
+    if (id && id !== store("sheet")) {
+      if (store("sheet")) { state.fav = ""; store("fav", null); } // autre tournoi : autres équipes
+      store("sheet", id);
+    }
+    if (teamParam) { state.fav = teamParam; store("fav", teamParam); }
+    return id;
+  }
+  function resolveSheet() {
+    if (DEMO) return Promise.resolve("");
+    var direct = sheetIdFrom(PARAMS.get("sheet"));
+    if (direct) return Promise.resolve(useSheet(direct));
+    var alias = str(PARAMS.get("t")).toLowerCase();
+    if (!alias) return Promise.resolve(store("sheet") || CFG.SHEET_ID || "");
+    var cached = store("alias_" + alias);
+    if (!CFG.DIRECTORY_SHEET_ID) return Promise.reject(new Error("aucun annuaire configuré"));
+    return gviz(CFG.DIRECTORY_TAB || "Tournois", "A:B", CFG.DIRECTORY_SHEET_ID).then(function (rows) {
+      var row = rows.filter(function (r) { return str(r[0]).toLowerCase() === alias && str(r[1]); })[0];
+      if (!row) throw new Error("tournoi « " + alias + " » introuvable dans l'annuaire");
+      var id = sheetIdFrom(row[1]);
+      store("alias_" + alias, id);
+      return useSheet(id);
+    }, function (e) {
+      if (cached) return useSheet(cached); // réseau coupé : on garde le dernier ID connu
+      throw new Error("annuaire des tournois illisible : " + (e && e.message ? e.message : e));
+    });
+  }
+
   function loadDemo() {
     return new Promise(function (resolve, reject) {
       if (window.DEMO_DATA) return resolve(window.DEMO_DATA);
@@ -389,7 +427,13 @@
   // ---------------------------------------------------------------- app
   var app = document.getElementById("app");
 
+  // Le Règlement décrit le tournoi par défaut : on le masque pour les autres tournois.
+  function rulesAvailable() { return DEMO || !SHEET || SHEET === CFG.SHEET_ID; }
+
   function render() {
+    var rulesTab = document.querySelector('#tabs a[data-tab="regles"]');
+    rulesTab.hidden = !rulesAvailable();
+    if (state.tab === "regles" && !rulesAvailable()) state.tab = "programme";
     document.querySelectorAll("#tabs a").forEach(function (a) {
       a.classList.toggle("active", a.getAttribute("data-tab") === state.tab);
     });
@@ -453,7 +497,7 @@
   }
 
   function refresh() {
-    if (state.loading) return;
+    if (state.loading || !state.ready) return;
     state.loading = true;
     renderSync();
     fetchAll().then(function (raw) {
@@ -487,5 +531,16 @@
   setInterval(renderSync, 5000);
 
   route();
-  refresh();
+  resolveSheet().then(function (id) {
+    SHEET = id;
+    if (!SHEET) DEMO = true;
+    state.ready = true;
+    render();
+    refresh();
+  }, function (e) {
+    state.error = e && e.message ? e.message : String(e);
+    showError();
+    renderSync();
+    render();
+  });
 })();
